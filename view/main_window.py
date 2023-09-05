@@ -1,26 +1,51 @@
 import tkinter as tk
 from tkinter import ttk
 from tkcalendar import DateEntry
-from controller import task_controller
+from controller import task_controller  
 
-window = None
+def populate_tasks(task_list_frame, selected_index=None):
+    for widget in task_list_frame.winfo_children():
+        widget.destroy()
+
+    tasks = task_controller.fetch_tasks()
+
+    for i, (title, description, due_date) in enumerate(tasks):
+        task_str = f"{i+1}. {title} ({due_date})"
+        
+        task_label = tk.Label(task_list_frame, text=task_str, fg="blue", cursor="hand2")
+        task_label.grid(row=i*2, column=0, sticky="w")
+        
+        def toggle_desc(i=i):
+            populate_tasks(task_list_frame, selected_index=i if i != selected_index else None)
+        
+        task_label.bind("<Button-1>", lambda event, i=i: toggle_desc(i))
+        
+        def task_delete(title=title):
+            task_controller.delete_task(title)
+            populate_tasks(task_list_frame)
+
+        delete_button = tk.Button(task_list_frame, text="❌", command=lambda title=title: task_delete(title), fg='red')
+        delete_button.grid(row=i*2, column=1)
+
+        if i == selected_index:
+            desc_label = tk.Label(task_list_frame, text=f"Description: {description}")
+            desc_label.grid(row=i*2 + 1, column=0, columnspan=2, sticky="w")
 
 def initialize_view():
-    global window
-    if window:
-        window.destroy()
-
     window = tk.Tk()
     window.title("Task Manager")
     
     notebook = ttk.Notebook(window)
     
+    # Create frames
     add_task_frame = ttk.Frame(notebook)
-    list_task_frame = ttk.Frame(notebook)
+    task_list_frame = ttk.Frame(notebook)
     
+    # Add frames to notebook
     notebook.add(add_task_frame, text='Add Task')
-    notebook.add(list_task_frame, text='List & Modify Tasks')
+    notebook.add(task_list_frame, text='List & Modify Tasks')
     
+    # Add Task tab content
     tk.Label(add_task_frame, text="Title").pack()
     title_entry = tk.Entry(add_task_frame)
     title_entry.pack()
@@ -32,34 +57,19 @@ def initialize_view():
     tk.Label(add_task_frame, text="Due Date").pack()
     due_date_entry = DateEntry(add_task_frame)
     due_date_entry.pack()
-
+    
     def add_and_fetch():
         task_controller.add_task(title_entry.get(), desc_entry.get(), due_date_entry.get())
-        initialize_view()  # Reinitialize the view
-
+        populate_tasks(task_list_frame)
+    
     tk.Button(add_task_frame, text="Add Task", command=add_and_fetch).pack()
     
-    task_list_frame = tk.Frame(list_task_frame)
-    task_list_frame.pack(expand=1, fill='both')
+    # Initial population of tasks
+    populate_tasks(task_list_frame)
     
-    tasks = task_controller.fetch_tasks()
-
-    for i, (title, due_date) in enumerate(tasks):
-        task_str = f"{i+1}. {title} ({due_date})"
-        
-        task_label = tk.Label(task_list_frame, text=task_str)
-        task_label.grid(row=i, column=0, sticky="w")
-        
-        def task_delete(title=title):
-            task_controller.delete_task(title)
-            initialize_view()
-
-        delete_button = tk.Button(task_list_frame, text="❌", command=lambda title=title: task_delete(title), fg='red')
-        delete_button.grid(row=i, column=1)
-
     notebook.pack(expand=1, fill='both')
     
     window.mainloop()
 
-# Call the function to initialize the view
-initialize_view()
+if __name__ == "__main__":
+    initialize_view()

@@ -10,7 +10,7 @@ def create_task(title, description, due_date):
 def fetch_tasks():
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT title, due_date FROM tasks")
+    cursor.execute("SELECT title, description, due_date FROM tasks")
     tasks = cursor.fetchall()
 
     conn.close()
@@ -22,3 +22,4 @@ def delete_task(title):
     cursor.execute("DELETE FROM tasks WHERE title=?", (title,))
     conn.commit()
     conn.close()
+
