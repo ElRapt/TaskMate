@@ -10,7 +10,7 @@ def create_task(title, description, due_date):
 def fetch_tasks():
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT title, description, due_date FROM tasks")
+    cursor.execute("SELECT title, description, due_date, completed FROM tasks")
     tasks = cursor.fetchall()
 
     conn.close()
@@ -23,3 +23,9 @@ def delete_task(title):
     conn.commit()
     conn.close()
 
+def tick_task(title):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE tasks SET completed=1 WHERE title=?", (title,))
+    conn.commit()
+    conn.close()

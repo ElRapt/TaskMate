@@ -8,3 +8,6 @@ def fetch_tasks():
 
 def delete_task(title):
     task.delete_task(title)
+
+def tick_task(title):
+    task.tick_task(title)
