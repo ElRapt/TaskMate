@@ -15,3 +15,10 @@ def fetch_tasks():
 
     conn.close()
     return tasks
+
+def delete_task(title):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM tasks WHERE title=?", (title,))
+    conn.commit()
+    conn.close()
