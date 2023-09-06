@@ -36,3 +36,10 @@ def untick_task(id):
     cursor.execute("UPDATE tasks SET completed=0 WHERE id=?", (id,))
     conn.commit()
     conn.close()
+
+def update_task(id, title, description, due_date):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE tasks SET title=?, description=?, due_date=? WHERE id=?", (title, description, due_date, id))
+    conn.commit()
+    conn.close()
