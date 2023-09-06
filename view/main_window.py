@@ -9,20 +9,20 @@ def populate_tasks(task_list_frame, selected_index=None):
 
     tasks = task_controller.fetch_tasks()
 
-    for i, (title, description, due_date, completed) in enumerate(tasks):
+    for i, (id, title, description, due_date, completed) in enumerate(tasks):
         tick_symbol = "✅" if completed else "☐"
 
         tick_label = tk.Label(task_list_frame, text=tick_symbol, fg="green" if completed else "black", cursor="hand2")
         tick_label.grid(row=i*2, column=0, sticky="w")
 
-        def toggle_tick(title=title):
+        def toggle_tick(id=id):
             if completed:
-                task_controller.untick_task(title)
+                task_controller.untick_task(id)
             else:
-                task_controller.tick_task(title)
+                task_controller.tick_task(id)
             populate_tasks(task_list_frame, selected_index)
 
-        tick_label.bind("<Button-1>", lambda event, title=title: toggle_tick(title))
+        tick_label.bind("<Button-1>", lambda event, id=id: toggle_tick(id))
 
         task_str = f"{i+1}. {title} ({due_date})"
         task_label = tk.Label(task_list_frame, text=task_str, fg="blue", cursor="hand2")
@@ -33,9 +33,17 @@ def populate_tasks(task_list_frame, selected_index=None):
 
         task_label.bind("<Button-1>", lambda event, i=i: toggle_desc(i))
 
+        def task_delete(id=id):
+            task_controller.delete_task(id)
+            populate_tasks(task_list_frame)
+
+        delete_button = tk.Button(task_list_frame, text="❌", command=lambda id=id: task_delete(id), fg='red')
+        delete_button.grid(row=i*2, column=2)
+
         if i == selected_index:
             desc_label = tk.Label(task_list_frame, text=f"Description: {description}")
-            desc_label.grid(row=i*2 + 1, column=0, columnspan=2, sticky="w")
+            desc_label.grid(row=i*2 + 1, column=0, columnspan=3, sticky="w")
+
 
 def initialize_view():
     window = tk.Tk()

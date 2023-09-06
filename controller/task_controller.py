@@ -11,3 +11,6 @@ def delete_task(title):
 
 def tick_task(title):
     task.tick_task(title)
+
+def untick_task(title):
+    task.untick_task(title)
