@@ -55,7 +55,7 @@ python main.py
 - completed: Holds a boolean value to represent whether the task has been completed.
 - created_at: Automatically stores the timestamp when the task is created.
 
-[Diagram](assets/diagram.png)
+![Diagram](assets/diagram.png)
 
 ## Contributing
 
